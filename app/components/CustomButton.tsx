@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Button, StyleSheet, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 export enum TYPE {
   PRIMARY,
@@ -10,8 +10,12 @@ export enum TYPE {
 interface ButtonProps {
   title: string;
   type: TYPE;
-  // action:
+  action: any;
+  width?: number;
 }
+
+const primary_width = '100%';
+const secondary_width = '40%';
 
 export default function CustomButton(props: ButtonProps) {
   return (
@@ -23,14 +27,19 @@ export default function CustomButton(props: ButtonProps) {
       }}>
       <View
         style={{
-          width: 370,
+          width: props?.width ?? 370,
         }}>
-        <Button
-          style={ButtonStyle.primary}
-          title={props?.title}
-          color={TYPE.PRIMARY === props.type ? '#DAA520' : '#FFFFFF'}
-          onPress={() => null}
-        />
+        <TouchableOpacity
+          onPress={props.action}
+          style={[
+            {
+              width:
+                props.type === TYPE.PRIMARY ? primary_width : secondary_width,
+            },
+            ButtonStyle.primary,
+          ]}>
+          <Text style={ButtonStyle.textView}>{props.title}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -38,9 +47,14 @@ export default function CustomButton(props: ButtonProps) {
 const ButtonStyle = StyleSheet.create({
   primary: {
     backgroundColor: '#DAA520',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 10,
+  },
+  textView: {
     color: 'white',
-    fontSize: 50,
+    fontSize: 20,
     fontWeight: 'bold',
-    width: 50,
   },
 });
