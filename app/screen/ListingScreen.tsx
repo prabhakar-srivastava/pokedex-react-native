@@ -1,30 +1,79 @@
 /* eslint-disable react-native/no-inline-styles */
-import {View, Text, Image, ImageBackground, TextInput} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {getPokemonData} from '../../utils/helpers/networkl';
+import React, { useEffect, useState } from 'react';
+import {
+  Image,
+  ImageBackground,
+  Text,
+  TextInput,
+  View
+} from 'react-native';
+import { getPokemonData, getPokemonDetails } from '../../utils/helpers/networkl';
+import Listing from '../components/listComponents/Listing';
+
+export interface PokeApiResponse {
+  name: string;
+  url: string;
+}
+export interface PokeApiType {
+  img: string;
+  types: {
+    slot: number;
+    type: {
+      name: string;
+      url: string;
+    };
+  }[];
+}
 
 export default function ListingScreen() {
   const [searchText, setSearchText] = useState<string>('');
   const [sortBy, setSortBy] = useState<number>(0);
-  const [pokemonData, setPokemonData] = useState<any>([]);
+  const [pokemonData, setPokemonData] = useState<PokeApiResponse | any>([]);
+  const [pokemonDetails, setPokemonDetails] = useState<any>([]);
+  const [loading, setLoading] = useState<boolean>(false)
 
   // fetching pokemon data from api
   const pokeData = async () => {
-    const setPokeData = await getPokemonData();
-    if (setPokeData?.length ?? 0 > 0) {
-      setPokemonData(setPokeData);
-    }
+    setLoading(true)
+    return new Promise(async (resolve, reject) => {
+      const setPokeData = await getPokemonData();
+      if (setPokeData?.length > 0) {
+        setPokemonData(setPokeData);
+
+        resolve(setPokeData);
+      } else {
+        reject(new Error('error fetching Pokemon'))
+      }
+    })
   };
 
+
   useEffect(() => {
-    pokeData();
+    pokeData().then((pokemonData) => {
+      if ((pokemonData as unknown as any).length > 0) {
+        pokeDetails(pokemonData)
+      }
+    })
   }, []);
 
-  //   useEffect(() => {
-  //     console.log('here');
 
-  //     pokemonData?.map((res: any) => console.log(res, 'wewew'));
-  //   }, [pokemonData]);
+  // fetching pokemon details  
+  const pokeDetails = (data: any) => {
+    let info: any[] = []
+    data?.map((item: any) => {
+      getPokemonDetails(item?.url)
+        .then((details: any) => {
+          info.push(details);
+        })
+        .catch((err) => console.log(err, 'errorListingPokemonDetails'))
+
+    })
+    setPokemonDetails(info)
+    if (info.length > 0) {
+      setLoading(false)
+    }
+  }
+
   return (
     <View>
       <ImageBackground source={require('../../utils/assets/bg.png')}>
@@ -64,7 +113,7 @@ export default function ListingScreen() {
           <View>
             <Image
               source={require('../../utils/assets/bookmark.png')}
-              style={{width: 30, height: 30}}
+              style={{ width: 30, height: 30 }}
             />
           </View>
         </View>
@@ -77,17 +126,18 @@ export default function ListingScreen() {
             alignItems: 'center',
             gap: 10,
             paddingHorizontal: 10,
+            overflow: 'hidden'
           }}>
           <Image
             source={require('../../utils/assets/seachIcon.png')}
-            style={{width: 20, height: 20}}
+            style={{ width: 20, height: 20 }}
           />
           <TextInput
-            placeholder="search by name ..."
+            placeholder="search by category, type or name ..."
             keyboardType="default"
             value={searchText}
             onChangeText={text => setSearchText(text)}
-            style={{width: 'auto', height: 50, color: '#000', fontSize: 18}}
+            style={{ width: 'auto', height: 50, color: '#000', fontSize: 18 }}
           />
         </View>
       </ImageBackground>
@@ -102,11 +152,11 @@ export default function ListingScreen() {
         }}>
         <Image
           source={require('../../utils/assets/filterIcon.png')}
-          style={{width: 30, height: 30}}
+          style={{ width: 30, height: 30 }}
         />
         {[
-          {id: 1, text: 'short by: A to Z'},
-          {id: 2, text: 'short by: Z to A'},
+          { id: 1, text: 'short by: A to Z' },
+          { id: 2, text: 'short by: Z to A' },
         ].map((res, index) => {
           return (
             <View
@@ -139,21 +189,8 @@ export default function ListingScreen() {
         })}
       </View>
       <View>
-        {pokemonData &&
-          pokemonData?.map((res: any, index: number) => {
-            return (
-              <View key={index}>
-                <Text>
-                  {res?.name} {res?.url}
-                </Text>
-
-                <Image source={{uri: res?.url}} />
-              </View>
-            );
-          })}
+        {pokemonData && (<Listing searchText={searchText} data={pokemonData} detailsData={pokemonDetails} />)}
         <Text>
-          asfdsfs
-          {pokemonData?.[0]?.name}
           {pokemonData?.length}
         </Text>
       </View>
