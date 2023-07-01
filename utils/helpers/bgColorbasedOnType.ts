@@ -1,4 +1,4 @@
-export const bgColorbasedOnType: any = {
+export const bgColorbasedOnType = {
   Normal: '#A8A878',
   Fire: '#fc6c6d',
   Water: '#74bafe',

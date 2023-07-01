@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Animated,
   Image,
@@ -8,32 +8,37 @@ import {
   Text,
   View,
 } from 'react-native';
-import CustomButton, {TYPE} from '../components/CustomButton';
+import CustomButton, { TYPE } from '../components/CustomButton';
 
 export default function WelcomeScreen(props: {
-  navigation: {navigate: (arg0: string, arg1: {name: string}) => any};
+  navigation: { navigate: (arg0: string) => any };
 }) {
   const [welcomeScreen, setWelcomeScreen] = useState<boolean>(false);
-  const value = new Animated.ValueXY({x: 0, y: 0});
+  const value = new Animated.ValueXY({ x: 0, y: 0 });
   const opacity = new Animated.Value(0);
+
+
   // for pokeBall movement animation
   const animateBall = () => {
     Animated.timing(value, {
-      toValue: {x: 0, y: -140},
-      duration: 800,
+      toValue: { x: 0, y: -140 },
+      duration: 600,
       useNativeDriver: false,
     }).start();
     return true;
   };
+
+
   // text fade in animation
   const fadeInAnimation = () => {
     Animated.timing(opacity, {
       toValue: 1,
-      duration: 1400,
+      duration: 1000,
       useNativeDriver: false,
     }).start();
     return true;
   };
+
   useEffect(() => {
     setTimeout(() => {
       setWelcomeScreen(true);
@@ -79,7 +84,7 @@ export default function WelcomeScreen(props: {
           {!welcomeScreen && <Text style={welcomeStyles.title}>PokeDex</Text>}
         </View>
         {welcomeScreen && animateBall() && fadeInAnimation() && (
-          <Animated.View style={{bottom: 25, opacity}}>
+          <Animated.View style={{ bottom: 25, opacity }}>
             <Text style={welcomeStyles.title}> Welcome to</Text>
             <Text style={welcomeStyles.title}> PokeDex</Text>
             <Text

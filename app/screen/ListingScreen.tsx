@@ -5,6 +5,7 @@ import {
   ImageBackground,
   Text,
   TextInput,
+  TouchableHighlight,
   View
 } from 'react-native';
 import { getPokemonData, getPokemonDetails } from '../../utils/helpers/networkl';
@@ -24,8 +25,11 @@ export interface PokeApiType {
     };
   }[];
 }
+export interface bgType {
+  [key: string]: string;
+}
 
-export default function ListingScreen() {
+export default function ListingScreen(props: { navigation: { navigate: (arg0: string) => void; }; }) {
   const [searchText, setSearchText] = useState<string>('');
   const [sortBy, setSortBy] = useState<number>(0);
   const [pokemonData, setPokemonData] = useState<PokeApiResponse | any>([]);
@@ -65,7 +69,7 @@ export default function ListingScreen() {
         .then((details: any) => {
           info.push(details);
         })
-        .catch((err) => console.log(err, 'errorListingPokemonDetails'))
+        .catch((err) => console.log(err, 'error ListingPokemonDetails'))
 
     })
     setPokemonDetails(info)
@@ -111,10 +115,13 @@ export default function ListingScreen() {
             </Text>
           </View>
           <View>
-            <Image
-              source={require('../../utils/assets/bookmark.png')}
-              style={{ width: 30, height: 30 }}
-            />
+            <TouchableHighlight onPress={() => props?.navigation?.navigate('BookmarkScreen')}>
+              <Image
+                source={require('../../utils/assets/bookmark.png')}
+                style={{ width: 30, height: 30 }}
+              />
+            </TouchableHighlight>
+
           </View>
         </View>
         <View
@@ -189,7 +196,16 @@ export default function ListingScreen() {
         })}
       </View>
       <View>
-        {pokemonData && (<Listing searchText={searchText} data={pokemonData} detailsData={pokemonDetails} />)}
+
+        {pokemonData && (
+          <Listing
+            route={props?.navigation}
+            searchText={searchText}
+            data={pokemonData}
+            detailsData={pokemonDetails}
+          />
+        )}
+
         <Text>
           {pokemonData?.length}
         </Text>

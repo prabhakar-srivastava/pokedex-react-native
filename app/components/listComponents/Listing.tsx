@@ -1,7 +1,8 @@
-import { View, Text, ScrollView, Image, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, Image, StyleSheet, TouchableHighlight } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import convertToCamelCase from '../../../utils/helpers/convertToCamelCase';
 import { bgColorbasedOnType } from '../../../utils/helpers/bgColorbasedOnType';
+import ListItem from './ListItem';
 
 interface Listing {
     searchText: string;
@@ -10,11 +11,13 @@ interface Listing {
         url: string
     }[];
     detailsData: any
+    route: any
 }
 type ListingData = {
     name: string,
     img: string,
-    type: any[]
+    type: any[],
+    detail: any
 }[]
 
 const convertToObject = (data: any[], detailsData: any[]) => {
@@ -25,19 +28,20 @@ const convertToObject = (data: any[], detailsData: any[]) => {
                 listingData.push({
                     name: details.name,
                     img: details?.sprites?.other?.home?.front_default,
-                    type: details?.types
+                    type: details?.types,
+                    detail: details
                 })
             }
         })
     })
     return listingData
 }
-export default function Listing({ searchText, data, detailsData }: Listing) {
+export default function Listing({ searchText, data, detailsData, route }: Listing) {
     const [lisingData, setListingData] = useState<ListingData>([])
     const [search, setSearch] = useState<string>('')
 
-
     useEffect(() => {
+
         console.log(data.length, detailsData.length, 'length');
 
         const objextData = convertToObject(data, detailsData)
@@ -52,7 +56,7 @@ export default function Listing({ searchText, data, detailsData }: Listing) {
     }, [searchText])
 
     useEffect(() => {
-        console.log(lisingData?.[0]?.type?.[0]?.type?.name);
+        // console.lsddsfgdhdsfhsdfsetgwgdfgfa?.[vfdsvsd]);
 
     }, [lisingData])
 
@@ -79,28 +83,8 @@ export default function Listing({ searchText, data, detailsData }: Listing) {
                 }).map((lisingData, index: number) => {
                     const background = convertToCamelCase(lisingData?.type?.[0]?.type?.name)
                     return (
-                        <View key={index} style={[{ backgroundColor: bgColorbasedOnType?.[background] }, ListStyle.container]}>
-                            <View>
-                                <Text style={{ color: 'white', fontSize: 20 }}>{convertToCamelCase(lisingData.name)}</Text>
-                                <View style={{ gap: 10, marginTop: 5 }}>{lisingData?.type.map((res: any, index: number) => {
-                                    return <Text style={ListStyle.type} key={index}>{res?.type?.name}</Text>
-                                })}</View>
-                            </View>
-                            <View>
-                                <Image source={{ uri: `${lisingData.img}` }} style={{ width: 90, height: 80 }} />
-                                <Image source={require('../../../utils/assets/pokeball.png')}
-                                    style={{
-                                        width: 90,
-                                        height: 80,
-                                        position: 'absolute',
-                                        zIndex: -1,
-                                        opacity: 0.4,
-                                        bottom: -20,
-                                        right: -20
-                                    }}
-                                />
-
-                            </View>
+                        <View key={index}>
+                            <ListItem route={route} data={lisingData} bg={background} />
                         </View>
                     )
                 })
@@ -109,25 +93,3 @@ export default function Listing({ searchText, data, detailsData }: Listing) {
         </ScrollView>
     )
 }
-const ListStyle = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        gap: 10,
-        padding: 20,
-        borderRadius: 10,
-        height: 130,
-        width: 180,
-        justifyContent: 'space-around',
-        overflow: 'hidden',
-
-
-    },
-
-    type: {
-        backgroundColor: '#D7D7D7',
-        textAlign: 'center',
-        borderRadius: 10,
-        padding: 2,
-        fontWeight: 'bold',
-    }
-})

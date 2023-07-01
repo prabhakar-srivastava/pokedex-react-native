@@ -1,5 +1,5 @@
 export const getPokemonData = async () => {
-  const response = await fetch('https://pokeapi.co/api/v2/pokemon');
+  const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100');
   if (response.status === 200) {
     const data = await response.json();
     return data?.results;
