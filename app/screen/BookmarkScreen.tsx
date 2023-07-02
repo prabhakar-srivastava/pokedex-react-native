@@ -12,6 +12,8 @@ export default function BookmarkScreen() {
     const { getItem, setItem } = useAsyncStorage('bookmark')
     const isFocus = useIsFocused()
     const navigation = useNavigation()
+
+
     useEffect(() => {
         getBookmark()
     }, [isFocus])
@@ -31,10 +33,9 @@ export default function BookmarkScreen() {
 
         }
     }
-
+    // deleting bookmark from the storage
     const deleteBookmark = async (id: string) => {
         const temp = bookmark
-
         try {
             const selectedBookmark = temp?.filter((item: { name: string }) => {
                 return item?.name != id
@@ -44,16 +45,13 @@ export default function BookmarkScreen() {
 
         } catch (error) {
             console.log(error, 'error deleting bookmark');
-
-
-        } finally {
-            // await setItem(JSON.stringify(bookmark))
         }
 
     }
 
 
-    const RenderItem = ({ data }: any) => {
+    const RenderItem = ({ item }: any) => {
+        const data = item
         return bookmark && (
             <View key={data?.name} style={{
                 marginVertical: 10,
@@ -103,7 +101,7 @@ export default function BookmarkScreen() {
                         <Text style={{ marginTop: 15, fontSize: 15, fontWeight: 'bold' }}>
                             Height :  {`${Math.floor((data.height * 3.937) / 12)}'${((data.height * 3.937) % 12).toFixed(2)}" (${data.height / 10}m)`}
                         </Text>
-                        <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Weight : {(data.weight / 10).toFixed(2)} kgs (${(data.weight * 0.220462).toFixed(2)} lbs)</Text>
+                        <Text style={{ fontSize: 15, marginTop: 5, fontWeight: 'bold' }}>Weight : {(data.weight / 10).toFixed(2)} kgs (${(data.weight * 0.220462).toFixed(2)} lbs)</Text>
                     </View>
                     <View>
                         <View>
@@ -137,19 +135,26 @@ export default function BookmarkScreen() {
 
     return (
         <View style={{ flex: 1, paddingHorizontal: 20, backgroundColor: '#D7D7D7' }}>
-            <TouchableHighlight style={{ zIndex: 1000000 }} onPress={() => navigation.goBack()}>
-                <Image
-                    source={require('../../utils/assets/backIcon.png')}
-                    style={{ width: 40, height: 30, position: 'absolute', top: 20, left: 0 }} />
-            </TouchableHighlight>
-            <Text style={{ textAlign: 'center', marginVertical: 10, fontWeight: 'bold', fontSize: 35 }}>Bookmarks</Text>
-            <FlatList
-                data={bookmark}
-                keyExtractor={item => item.name}
-                renderItem={items => {
-                    return <RenderItem data={items?.item} />
-                }}
-            />
+            {bookmark.length > 0 ? (
+                <View style={{ marginTop: 60 }}>
+                    <FlatList
+                        data={bookmark}
+                        renderItem={RenderItem}
+                        keyExtractor={(item: any) => item?.name}
+                    />
+                </View>
+            ) : (
+                <View style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: 100,
+                }}>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>No Bookmark, Try adding some</Text>
+                </View>
+            )}
+
+
         </View>
     )
 }

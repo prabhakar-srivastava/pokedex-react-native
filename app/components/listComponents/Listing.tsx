@@ -1,95 +1,117 @@
-import { View, Text, ScrollView, Image, StyleSheet, TouchableHighlight } from 'react-native'
+import { View, Text, ScrollView, Image, StyleSheet, TouchableHighlight, FlatList, Dimensions, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import convertToCamelCase from '../../../utils/helpers/convertToCamelCase';
 import { bgColorbasedOnType } from '../../../utils/helpers/bgColorbasedOnType';
 import ListItem from './ListItem';
+import { convertToObject } from '../../../utils/helpers/convertToObject';
+import { PokeApiResponse } from '../../screen/ListingScreen';
+import { getAllData, searchPokemon } from '../../../utils/helpers/networkl';
+import { useNavigation } from '@react-navigation/native';
 
 interface Listing {
-    searchText: string;
-    data: {
-        name: string,
-        url: string
-    }[];
-    detailsData: any
-    route: any
+    route: any,
+    filterByType: string
 }
-type ListingData = {
+export type ListingData = {
     name: string,
     img: string,
     type: any[],
     detail: any
+
 }[]
 
-const convertToObject = (data: any[], detailsData: any[]) => {
-    let listingData: ListingData = []
-    data.map((res: any) => {
-        detailsData.map((details: any) => {
-            if (res.name === details.name) {
-                listingData.push({
-                    name: details.name,
-                    img: details?.sprites?.other?.home?.front_default,
-                    type: details?.types,
-                    detail: details
-                })
-            }
-        })
-    })
-    return listingData
-}
-export default function Listing({ searchText, data, detailsData, route }: Listing) {
+
+let count = 0
+export default function Listing({ route, filterByType }: Listing) {
     const [lisingData, setListingData] = useState<ListingData>([])
-    const [search, setSearch] = useState<string>('')
+    const [filterData, setFilterData] = useState<ListingData>([])
+    const [nextUrl, setNextUrl] = useState<string>('')
+    const [filterType, setFilterType] = useState<string>(filterByType)
+
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-
-        console.log(data.length, detailsData.length, 'length');
-
-        const objextData = convertToObject(data, detailsData)
-        if (objextData?.length > 0) {
-            setListingData(objextData)
-        }
-    }, [data, detailsData])
+        fetchAllData()
+    }, [])
 
     // setting searchedData
-    useEffect(() => {
-        setSearch(searchText)
-    }, [searchText])
+
 
     useEffect(() => {
-        // console.lsddsfgdhdsfhsdfsetgwgdfgfa?.[vfdsvsd]);
+        if (filterType !== filterByType) {
+            setFilterData([])
 
-    }, [lisingData])
+        }
+        fetchAllData()
+    }, [filterByType])
+
+
+
+    const fetchAllData = async (nextUrl?: string) => {
+        let filterResponse: any[] = []
+        setLoading(true)
+        try {
+            const data = await getAllData(nextUrl)
+            if (data?.list?.length > 0) {
+                if (filterByType != "") {
+
+                    data?.list?.map((res: { detail: { types: { type: { name: string; }; }[]; }; }) => {
+                        if (filterByType.toLowerCase() === res?.detail?.types?.[0]?.type.name.toLowerCase()) {
+                            filterResponse.push(res)
+
+                        }
+                    })
+                }
+                setFilterData([...filterData, ...filterResponse])
+                setListingData([...lisingData, ...data.list])
+                setNextUrl(data.nextUrl)
+                setLoading(false)
+                count++
+            }
+
+        } catch (error) {
+            console.log('error fetching all data', error);
+
+        }
+
+    }
+
+
+    const reachEndPoint = () => {
+        if (!loading && nextUrl) {
+            fetchAllData(nextUrl)
+        }
+    }
+
+    const loadingComponent = () => {
+        return <View style={{ marginVertical: 30 }}>
+            <ActivityIndicator color="black" size="large" />
+        </View>
+    }
 
     return (
-        <ScrollView>
+        <View style={{ height: '100%' }}>
             <View style={{
-                flex: 1,
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                marginHorizontal: 17,
-                marginVertical: 20,
-                gap: 15,
-                justifyContent: 'space-between',
-                alignItems: 'center'
+                marginBottom: 40
             }}>
-                {lisingData.filter((res) => {
-                    if (res?.name.toLowerCase().includes(search.toLowerCase()) ||
-                        res?.type?.[0]?.type?.name.toLowerCase().includes(search.toLowerCase())) {
-                        return res
-                    }
-                    if (!search) {
-                        return res
-                    }
-                }).map((lisingData, index: number) => {
-                    const background = convertToCamelCase(lisingData?.type?.[0]?.type?.name)
-                    return (
-                        <View key={index}>
-                            <ListItem route={route} data={lisingData} bg={background} />
-                        </View>
-                    )
-                })
-                }
+                {loading && count === 0 ? loadingComponent() : (
+                    <FlatList
+                        data={filterByType.length > 0 ? filterData : lisingData}
+                        numColumns={Math.floor(Dimensions.get('window').width / 180)}
+                        contentContainerStyle={{ alignItems: 'center', gap: 14 }}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item }) => {
+                            const background = convertToCamelCase(item?.type?.[0]?.type?.name)
+                            return <View style={{ paddingHorizontal: 8 }}>
+                                <ListItem route={route} data={item} bg={background} />
+                            </View>
+                        }}
+                        onEndReached={reachEndPoint}
+                        onEndReachedThreshold={0.5}
+                        ListFooterComponent={loading ? loadingComponent() : null}
+                    />
+                )}
             </View>
-        </ScrollView>
+        </View>
     )
 }

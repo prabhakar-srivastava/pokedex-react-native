@@ -1,215 +1,255 @@
 /* eslint-disable react-native/no-inline-styles */
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
+  Animated,
   Image,
   ImageBackground,
+  ScrollView,
   Text,
   TextInput,
   TouchableHighlight,
   View
 } from 'react-native';
-import { getPokemonData, getPokemonDetails } from '../../utils/helpers/networkl';
 import Listing from '../components/listComponents/Listing';
+import typeJson from '../../utils/helpers/types.json'
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { searchPokemon } from '../../utils/helpers/networkl';
 
 export interface PokeApiResponse {
-  name: string;
-  url: string;
+  nexturl: string;
+  list: any[];
 }
-export interface PokeApiType {
-  img: string;
-  types: {
-    slot: number;
-    type: {
-      name: string;
-      url: string;
-    };
-  }[];
-}
+
 export interface bgType {
   [key: string]: string;
 }
 
-export default function ListingScreen(props: { navigation: { navigate: (arg0: string) => void; }; }) {
+export default function ListingScreen(props: { navigation: { navigate: (arg0: string, arg1?: any) => void; }; }) {
   const [searchText, setSearchText] = useState<string>('');
-  const [sortBy, setSortBy] = useState<number>(0);
-  const [pokemonData, setPokemonData] = useState<PokeApiResponse | any>([]);
-  const [pokemonDetails, setPokemonDetails] = useState<any>([]);
-  const [loading, setLoading] = useState<boolean>(false)
-
-  // fetching pokemon data from api
-  const pokeData = async () => {
-    setLoading(true)
-    return new Promise(async (resolve, reject) => {
-      const setPokeData = await getPokemonData();
-      if (setPokeData?.length > 0) {
-        setPokemonData(setPokeData);
-
-        resolve(setPokeData);
-      } else {
-        reject(new Error('error fetching Pokemon'))
-      }
-    })
-  };
-
+  const [sortByType, setSortByTYpe] = useState<string>('');
+  const [searchError, setSearchError] = useState<boolean>(false)
+  const [bookmark, setBookmark] = useState<number>(0)
+  const isFocus = useIsFocused()
+  const { getItem } = useAsyncStorage('bookmark')
 
   useEffect(() => {
-    pokeData().then((pokemonData) => {
-      if ((pokemonData as unknown as any).length > 0) {
-        pokeDetails(pokemonData)
+    getbookmarkLength()
+  }, [isFocus])
+
+
+
+
+  // fetching bookmark details  
+  const getbookmarkLength = async () => {
+    try {
+      const bookmarkData: any = await getItem()
+      const BookmarkLength = JSON.parse(bookmarkData)
+      if (BookmarkLength?.length > 0) {
+        console.log(BookmarkLength?.length === 0, 'bk');
+
+        setBookmark(BookmarkLength?.length)
+      } else {
+        setBookmark(0)
       }
-    })
-  }, []);
+    } catch (error) {
+      console.log(error, 'error fetching bookmarks');
 
+    }
+  }
+  const disableError = () => {
+    setTimeout(() => {
+      setSearchError(false)
+    }, 2000)
+  }
 
-  // fetching pokemon details  
-  const pokeDetails = (data: any) => {
-    let info: any[] = []
-    data?.map((item: any) => {
-      getPokemonDetails(item?.url)
-        .then((details: any) => {
-          info.push(details);
-        })
-        .catch((err) => console.log(err, 'error ListingPokemonDetails'))
+  const searchFilter = async (searchText: string) => {
+    try {
+      const data = await searchPokemon(searchText)
+      console.log(data?.name, 'search');
 
-    })
-    setPokemonDetails(info)
-    if (info.length > 0) {
-      setLoading(false)
+      if (Object.keys(data).length > 0) {
+
+        props?.navigation?.navigate('DetailScreen', data)
+      }
+    } catch (error) {
+      setSearchError(true)
+      disableError()
+      console.log('error gettting search ', error);
+
     }
   }
 
   return (
-    <View>
-      <ImageBackground source={require('../../utils/assets/bg.png')}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingTop: 25,
-            paddingBottom: 15,
-          }}>
+    <SafeAreaView>
+      <View>
+        <ImageBackground source={require('../../utils/assets/bg.png')}>
+          {searchError && (
+
+            <Text style={{
+              backgroundColor: 'white',
+              position: 'absolute',
+              fontWeight: 'bold',
+              fontSize: 20,
+              paddingHorizontal: 20,
+              color: 'red',
+              borderRadius: 5,
+              left: 120,
+              top: 15
+            }}>No result found</Text>
+
+          )}
+
           <View
             style={{
-              justifyContent: 'left',
-              alignItems: 'center',
               flexDirection: 'row',
-              gap: 10,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingTop: 25,
+              paddingBottom: 15,
             }}>
-            <Image
-              source={require('../../utils/assets/tumblr.gif')}
+            <View
               style={{
-                width: 40,
-                height: 40,
-              }}
-            />
-            <Text
-              style={{
-                fontSize: 30,
-                fontWeight: 'bold',
-                color: '#DAA520',
+                justifyContent: 'left',
+                alignItems: 'center',
+                flexDirection: 'row',
+                gap: 10,
               }}>
-              PokeDex
-            </Text>
-          </View>
-          <View>
-            <TouchableHighlight onPress={() => props?.navigation?.navigate('BookmarkScreen')}>
               <Image
-                source={require('../../utils/assets/bookmark.png')}
+                source={require('../../utils/assets/tumblr.gif')}
+                style={{
+                  width: 40,
+                  height: 40,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: 30,
+                  fontWeight: 'bold',
+                  color: '#DAA520',
+                }}>
+                PokeDex
+              </Text>
+            </View>
+            <View>
+              <TouchableHighlight onPress={() => props?.navigation?.navigate('BookmarkScreen')}>
+                <View>
+                  <Image
+                    source={require('../../utils/assets/bookmark.png')}
+                    style={{ width: 30, height: 30 }}
+                  />
+                  {bookmark > 0 && (
+                    <Text style={{
+                      backgroundColor: 'white',
+                      borderRadius: 10,
+                      fontWeight: 'bold',
+                      width: 20,
+                      textAlign: 'center',
+                      position: 'absolute',
+                      right: -6,
+                      top: -10,
+                    }}>{bookmark}</Text>
+                  )}
+
+                </View>
+              </TouchableHighlight>
+
+            </View>
+          </View>
+          <View
+            style={{
+              backgroundColor: '#fff',
+              margin: 20,
+              borderRadius: 6,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 10,
+              paddingHorizontal: 10,
+              overflow: 'hidden',
+              justifyContent: 'space-between',
+            }}>
+
+            <TextInput
+              placeholder="search by name ..."
+              keyboardType="default"
+              value={searchText}
+              onChangeText={text => setSearchText(text)}
+              style={{ width: 'auto', height: 50, color: '#000', fontSize: 18 }}
+            />
+            <TouchableHighlight onPress={() => searchFilter(searchText)}>
+              <Image
+                source={require('../../utils/assets/seachIcon.png')}
+                style={{ width: 20, height: 20 }}
+              />
+            </TouchableHighlight>
+          </View>
+        </ImageBackground>
+        <View
+          style={{
+            paddingHorizontal: 17,
+            backgroundColor: '#fff',
+            paddingVertical: 7,
+            flexDirection: 'row',
+            gap: 10,
+            alignItems: 'center',
+          }}>
+          {sortByType?.length > 0 &&
+            <TouchableHighlight onPress={() => {
+              setSortByTYpe('')
+            }}>
+              <Image
+                source={require('../../utils/assets/closeIcon.png')}
                 style={{ width: 30, height: 30 }}
               />
             </TouchableHighlight>
+          }
 
-          </View>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {typeJson?.types.map((res, index) => {
+              return (
+                <View
+                  key={index}
+                  style={{
+                    borderWidth: 1,
+                    borderColor: sortByType === res ? '#DAA520' : '#000000',
+                    borderRadius: 50,
+                    paddingHorizontal: 10,
+                    paddingVertical: 5,
+                    width: 90,
+                    marginHorizontal: 5,
+                    backgroundColor: sortByType === res ? '#DAA520' : 'transparent',
+                  }}>
+                  <Text
+                    onPress={() => {
+                      if (sortByType === res) {
+                        setSortByTYpe('');
+                        return;
+                      } else {
+                        setSortByTYpe(res);
+                      }
+                    }}
+                    style={{
+                      textAlign: 'center',
+                      fontWeight: 'bold',
+                      color: sortByType === res ? 'white' : 'black',
+                    }}>
+                    {res}
+                  </Text>
+                </View>
+              );
+            })}
+          </ScrollView>
         </View>
-        <View
-          style={{
-            backgroundColor: '#fff',
-            margin: 20,
-            borderRadius: 6,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 10,
-            paddingHorizontal: 10,
-            overflow: 'hidden'
-          }}>
-          <Image
-            source={require('../../utils/assets/seachIcon.png')}
-            style={{ width: 20, height: 20 }}
-          />
-          <TextInput
-            placeholder="search by category, type or name ..."
-            keyboardType="default"
-            value={searchText}
-            onChangeText={text => setSearchText(text)}
-            style={{ width: 'auto', height: 50, color: '#000', fontSize: 18 }}
-          />
-        </View>
-      </ImageBackground>
-      <View
-        style={{
-          paddingHorizontal: 17,
-          backgroundColor: '#fff',
-          paddingVertical: 7,
-          flexDirection: 'row',
-          gap: 10,
-          alignItems: 'center',
-        }}>
-        <Image
-          source={require('../../utils/assets/filterIcon.png')}
-          style={{ width: 30, height: 30 }}
-        />
-        {[
-          { id: 1, text: 'short by: A to Z' },
-          { id: 2, text: 'short by: Z to A' },
-        ].map((res, index) => {
-          return (
-            <View
-              key={index}
-              style={{
-                borderWidth: 1,
-                borderColor: sortBy === res.id ? '#DAA520' : '#000000',
-                borderRadius: 50,
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-                backgroundColor: sortBy === res.id ? '#DAA520' : 'transparent',
-              }}>
-              <Text
-                onPress={() => {
-                  if ((setSortBy as unknown as number) > 0) {
-                    setSortBy(0);
-                    return;
-                  } else {
-                    setSortBy(res.id);
-                  }
-                }}
-                style={{
-                  fontWeight: 'bold',
-                  color: sortBy === res.id ? 'white' : 'black',
-                }}>
-                {res.text}
-              </Text>
-            </View>
-          );
-        })}
-      </View>
-      <View>
-
-        {pokemonData && (
+        <View>
           <Listing
             route={props?.navigation}
-            searchText={searchText}
-            data={pokemonData}
-            detailsData={pokemonDetails}
+            filterByType={sortByType}
           />
-        )}
-
-        <Text>
-          {pokemonData?.length}
-        </Text>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

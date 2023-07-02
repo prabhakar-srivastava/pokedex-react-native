@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export enum TYPE {
   PRIMARY,
@@ -12,12 +12,14 @@ interface ButtonProps {
   type: TYPE;
   action: any;
   width?: number;
+  buttonWidth?: number;
 }
 
-const primary_width = '100%';
-const secondary_width = '40%';
+
 
 export default function CustomButton(props: ButtonProps) {
+  const primary_width = '100%';
+  const secondary_width = props?.buttonWidth ?? '40%';
   return (
     <View
       style={{

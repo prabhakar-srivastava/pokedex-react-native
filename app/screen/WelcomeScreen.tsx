@@ -66,9 +66,7 @@ export default function WelcomeScreen(props: {
         style={welcomeStyles.fullscreen}
         source={require('../../utils/assets/bg.png')}
         resizeMode="cover">
-        <View
-        // style={{marginTop: welcomeScreen ? 70 : null}}
-        >
+        <View>
           <Animated.View style={value.getLayout()}>
             <Image
               style={{
@@ -104,15 +102,7 @@ export default function WelcomeScreen(props: {
               title="Explore Now "
               action={() => props.navigation.navigate('ListingScreen')}
             />
-            <Text
-              style={{
-                color: '#fff',
-                textAlign: 'center',
-                marginTop: 15,
-                textDecorationLine: 'underline',
-              }}>
-              About Me
-            </Text>
+
           </Animated.View>
         )}
       </ImageBackground>
