@@ -12,7 +12,7 @@ import {
   TouchableHighlight,
   View
 } from 'react-native';
-import Listing, { LodingSize, loadingComponent } from '../components/listComponents/Listing';
+import Listing, { ListingData, LodingSize, loadingComponent } from '../components/listComponents/Listing';
 import typeJson from '../../utils/helpers/types.json'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { searchPokemon } from '../../utils/helpers/networkl';
@@ -31,6 +31,7 @@ export default function ListingScreen(props: { navigation: { navigate: (arg0: st
   const [sortByType, setSortByTYpe] = useState<string>('');
   const [searchError, setSearchError] = useState<boolean>(false)
   const [searchLoader, setSearchLoader] = useState<boolean>(false)
+  const [filterData, setFilterData] = useState<ListingData>([])
   const [bookmark, setBookmark] = useState<number>(0)
   const isFocus = useIsFocused()
   const { getItem } = useAsyncStorage('bookmark')
@@ -204,6 +205,7 @@ export default function ListingScreen(props: { navigation: { navigate: (arg0: st
           {sortByType?.length > 0 &&
             <TouchableHighlight onPress={() => {
               setSortByTYpe('')
+              setFilterData([])
             }}>
               <Image
                 source={require('../../utils/assets/closeIcon.png')}
@@ -229,12 +231,7 @@ export default function ListingScreen(props: { navigation: { navigate: (arg0: st
                   }}>
                   <Text
                     onPress={() => {
-                      if (sortByType === res) {
-                        setSortByTYpe('');
-                        return;
-                      } else {
-                        setSortByTYpe(res);
-                      }
+                      setSortByTYpe(res);
                     }}
                     style={{
                       textAlign: 'center',
@@ -252,6 +249,7 @@ export default function ListingScreen(props: { navigation: { navigate: (arg0: st
           <Listing
             route={props?.navigation}
             filterByType={sortByType}
+            filterData={{ filterData, setFilterData }}
           />
         </View>
       </View>

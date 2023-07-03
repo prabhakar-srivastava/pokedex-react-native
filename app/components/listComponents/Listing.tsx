@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 interface Listing {
     route: any,
     filterByType: string
+    filterData: any
 }
 export type ListingData = {
     name: string,
@@ -22,9 +23,9 @@ export type ListingData = {
 
 
 let count = 0
-export default function Listing({ route, filterByType }: Listing) {
+export default function Listing({ route, filterByType, filterData }: Listing) {
     const [lisingData, setListingData] = useState<ListingData>([])
-    const [filterData, setFilterData] = useState<ListingData>([])
+    // const [filterData, setFilterData] = useState<ListingData>([]) 
     const [nextUrl, setNextUrl] = useState<string>('')
     const [filterType, setFilterType] = useState<string>(filterByType)
 
@@ -39,7 +40,7 @@ export default function Listing({ route, filterByType }: Listing) {
 
     useEffect(() => {
         if (filterType !== filterByType) {
-            setFilterData([])
+            // setFilterData([])
 
         }
         fetchAllData()
@@ -62,7 +63,7 @@ export default function Listing({ route, filterByType }: Listing) {
                         }
                     })
                 }
-                setFilterData([...filterData, ...filterResponse])
+                filterData?.setFilterData([...filterData?.filterData, ...filterResponse])
                 setListingData([...lisingData, ...data.list])
                 setNextUrl(data.nextUrl)
                 setLoading(false)
@@ -100,7 +101,7 @@ export default function Listing({ route, filterByType }: Listing) {
                     <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>Oops !! , Try restarting app again</Text>
                 </View> : loading && count === 0 ? loadingComponent(LodingSize.LARGE) : (
                     <FlatList
-                        data={filterByType.length > 0 ? filterData : lisingData}
+                        data={filterByType.length > 0 ? filterData?.filterData : lisingData}
                         numColumns={Math.floor(Dimensions.get('window').width / 180)}
                         contentContainerStyle={{ alignItems: 'center', gap: 14 }}
                         showsVerticalScrollIndicator={false}
