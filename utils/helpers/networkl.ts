@@ -46,8 +46,9 @@ export const getAllData = async (nextUrl?: string) => {
 
 }
 export const searchPokemon = async (value: string) => {
+  const searchvalue = value.toLowerCase()
   try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${value}`)
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${searchvalue}`)
     const data = await response.json()
     return data
   } catch (error) {

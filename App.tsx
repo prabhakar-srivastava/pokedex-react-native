@@ -30,7 +30,7 @@ export default function App() {
         <Stack.Screen
           name="BookmarkScreen"
           component={BookmarkScreen}
-          options={{ headerTransparent: true, headerTitle: () => <View><Text style={{ fontSize: 30, fontWeight: "700", left: 50 }}>Bookmarks</Text></View>, headerTintColor: "black" }}
+          options={{ headerTransparent: true, headerTitle: () => <View><Text style={{ fontSize: 30, fontWeight: "700", left: 50, color: 'black' }}>Bookmarks</Text></View>, headerTintColor: "black" }}
         />
       </Stack.Navigator>
     </NavigationContainer>
