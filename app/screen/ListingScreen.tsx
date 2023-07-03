@@ -155,6 +155,7 @@ export default function ListingScreen(props: { navigation: { navigate: (arg0: st
                       position: 'absolute',
                       right: -6,
                       top: -10,
+                      color: 'black'
                     }}>{bookmark}</Text>
                   )}
 
@@ -178,13 +179,19 @@ export default function ListingScreen(props: { navigation: { navigate: (arg0: st
 
             <TextInput
               placeholder="search by name ..."
+              placeholderTextColor={'#1a191a'}
               keyboardType="default"
               value={searchText}
               onChangeText={text => setSearchText(text)}
               style={{ width: 'auto', height: 50, color: '#000', fontSize: 18 }}
             />
             {searchLoader ? loadingComponent(LodingSize.SMALL)
-              : <TouchableHighlight onPress={() => searchFilter(searchText)}>
+              : <TouchableHighlight onPress={() => {
+                if (searchText?.length > 0) {
+
+                  searchFilter(searchText)
+                }
+              }}>
                 <Image
                   source={require('../../utils/assets/seachIcon.png')}
                   style={{ width: 20, height: 20 }}

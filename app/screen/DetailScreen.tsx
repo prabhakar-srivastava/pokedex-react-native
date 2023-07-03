@@ -87,7 +87,7 @@ export default function DetailScreen(props: any) {
                         return (
                             <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10, marginHorizontal: 20 }}>
                                 <View style={{ flex: 1.2, justifyContent: 'space-between', flexDirection: 'row', marginRight: 10 }}>
-                                    <Text style={{ fontSize: 15, opacity: 0.7, fontWeight: 'bold' }}>{items?.item?.stat?.name.toUpperCase()} </Text>
+                                    <Text style={{ color: 'rgba(0,0,0,0.6)', fontSize: 15, opacity: 0.7, fontWeight: 'bold' }}>{items?.item?.stat?.name.toUpperCase()} </Text>
                                     {/* <Text> : </Text> */}
                                 </View>
                                 <View style={{ flex: 2.1, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
@@ -102,7 +102,7 @@ export default function DetailScreen(props: any) {
                                         }}
                                     >
                                     </Text>
-                                    <Text style={{ fontWeight: 'bold' }}>{items?.item?.base_stat} </Text>
+                                    <Text style={{ fontWeight: 'bold', color: 'black' }}>{items?.item?.base_stat} </Text>
                                 </View>
                             </View>
                         )
@@ -118,18 +118,18 @@ export default function DetailScreen(props: any) {
                 <View style={{ marginHorizontal: 20, marginVertical: 10 }}>
                     <View style={{ flexDirection: 'row', gap: 20 }}>
                         <View style={{ gap: 20, marginBottom: 10 }}>
-                            <Text style={{ fontSize: 20, opacity: 0.7, fontWeight: 'bold' }}>Species</Text>
-                            <Text style={{ fontSize: 20, opacity: 0.7, fontWeight: 'bold' }}>Height</Text>
-                            <Text style={{ fontSize: 20, opacity: 0.7, fontWeight: 'bold' }}>Weight</Text>
-                            <Text style={{ fontSize: 20, opacity: 0.7, fontWeight: 'bold' }}>Abilities</Text>
+                            <Text style={{ fontSize: 20, opacity: 0.7, fontWeight: 'bold', color: 'rgba(0,0,0,0.6)' }}>Species</Text>
+                            <Text style={{ fontSize: 20, opacity: 0.7, fontWeight: 'bold', color: 'rgba(0,0,0,0.6)' }}>Height</Text>
+                            <Text style={{ fontSize: 20, opacity: 0.7, fontWeight: 'bold', color: 'rgba(0,0,0,0.6)' }}>Weight</Text>
+                            <Text style={{ fontSize: 20, opacity: 0.7, fontWeight: 'bold', color: 'rgba(0,0,0,0.6)' }}>Abilities</Text>
                         </View>
                         <View style={{ gap: 20, marginBottom: 10, flexWrap: 'wrap', flexDirection: 'column' }}>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{convertToCamelCase(data?.species?.name)}</Text>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>{convertToCamelCase(data?.species?.name)}</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>
                                 {`${Math.floor((data.height * 3.937) / 12)}'${((data.height * 3.937) % 12).toFixed(2)}" (${data.height / 10}m)`}
                             </Text>
-                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{(data.weight / 10).toFixed(2)} kgs (${(data.weight * 0.220462).toFixed(2)} lbs)</Text>
-                            <Text style={{ flexDirection: 'column', fontSize: 20, fontWeight: 'bold' }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>{(data.weight / 10).toFixed(2)} kgs ({(data.weight * 0.220462).toFixed(2)} lbs)</Text>
+                            <Text style={{ flexDirection: 'column', fontSize: 20, fontWeight: 'bold', color: 'black' }}>
                                 {data.abilities.map((item: { ability: { name: string } }) => convertToCamelCase(item.ability.name)).join(", ")}
                             </Text>
                         </View>
@@ -167,7 +167,7 @@ export default function DetailScreen(props: any) {
                                 borderWidth: 1
                             }}>
 
-                                <Text style={{ fontSize: 20 }}>{convertToCamelCase(items?.item?.move?.name)}</Text>
+                                <Text style={{ fontSize: 20, color: 'black' }}>{convertToCamelCase(items?.item?.move?.name)}</Text>
                             </View>
                         )
                     }}
@@ -333,5 +333,6 @@ const detailStyle = StyleSheet.create({
         borderRadius: 10,
         padding: 2,
         fontWeight: 'bold',
+        color: 'black'
     }
 })

@@ -57,5 +57,6 @@ const ListStyle = StyleSheet.create({
         borderRadius: 10,
         padding: 2,
         fontWeight: 'bold',
+        color: 'black'
     }
 })

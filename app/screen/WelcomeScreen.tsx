@@ -14,14 +14,14 @@ export default function WelcomeScreen(props: {
   navigation: { navigate: (arg0: string) => any };
 }) {
   const [welcomeScreen, setWelcomeScreen] = useState<boolean>(false);
-  const value = new Animated.ValueXY({ x: 0, y: 140 });
+  const value = new Animated.ValueXY({ x: 0, y: 40 });
   const opacity = new Animated.Value(0);
 
 
   // for pokeBall movement animation
   const animateBall = () => {
     Animated.timing(value, {
-      toValue: { x: 0, y: -30 },
+      toValue: { x: 0, y: -50 },
       duration: 600,
       useNativeDriver: false,
     }).start();
@@ -55,6 +55,7 @@ export default function WelcomeScreen(props: {
     title: {
       fontSize: 50,
       fontWeight: 'bold',
+      bottom: welcomeScreen ? 0 : -30,
       color: '#DAA520',
       textAlign: welcomeScreen ? 'left' : 'center',
     },

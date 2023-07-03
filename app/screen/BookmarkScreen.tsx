@@ -100,7 +100,7 @@ export default function BookmarkScreen() {
                         <Text style={{ marginTop: 15, fontSize: 15, fontWeight: 'bold' }}>
                             Height :  {`${Math.floor((data.height * 3.937) / 12)}'${((data.height * 3.937) % 12).toFixed(2)}" (${data.height / 10}m)`}
                         </Text>
-                        <Text style={{ fontSize: 15, marginTop: 5, fontWeight: 'bold' }}>Weight : {(data.weight / 10).toFixed(2)} kgs (${(data.weight * 0.220462).toFixed(2)} lbs)</Text>
+                        <Text style={{ fontSize: 15, marginTop: 5, fontWeight: 'bold' }}>Weight : {(data.weight / 10).toFixed(2)} kgs ({(data.weight * 0.220462).toFixed(2)} lbs)</Text>
                     </View>
                     <View>
                         <View>
