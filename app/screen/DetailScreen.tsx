@@ -212,7 +212,7 @@ export default function DetailScreen(props: any) {
                         </View>
                     </View>
                     <View style={{ right: isBookmarked ? 50 : 30, zIndex: 1000000 }}>
-                        <CustomButton buttonWidth={isBookmarked ? 80 : 60} width={30} title={`${isBookmarked ? 'Added' : 'Add'}`} type={TYPE.SECONDARY} action={() => addToBookmark()} />
+                        <CustomButton buttonWidth={isBookmarked ? 80 : 60} width={30} title={`${isBookmarked ? 'Added' : 'Add'}`} type={TYPE.SECONDARY} action={() => { !isBookmarked && addToBookmark() }} />
                     </View>
 
                 </View>

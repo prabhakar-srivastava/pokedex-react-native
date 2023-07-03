@@ -138,12 +138,12 @@ export default function BookmarkScreen() {
                 <View style={{ marginTop: 60 }}>
                     <FlatList
                         data={bookmark}
+                        showsVerticalScrollIndicator={false}
                         renderItem={(items) => {
                             return <View key={items?.index}>
                                 <RenderItem item={items?.item} />
                             </View>
                         }}
-                        keyExtractor={(item: any) => item?.name}
                     />
                 </View>
             ) : (
