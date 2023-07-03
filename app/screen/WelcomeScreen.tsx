@@ -14,14 +14,14 @@ export default function WelcomeScreen(props: {
   navigation: { navigate: (arg0: string) => any };
 }) {
   const [welcomeScreen, setWelcomeScreen] = useState<boolean>(false);
-  const value = new Animated.ValueXY({ x: 0, y: 0 });
+  const value = new Animated.ValueXY({ x: 0, y: 140 });
   const opacity = new Animated.Value(0);
 
 
   // for pokeBall movement animation
   const animateBall = () => {
     Animated.timing(value, {
-      toValue: { x: 0, y: -140 },
+      toValue: { x: 0, y: -30 },
       duration: 600,
       useNativeDriver: false,
     }).start();
@@ -61,14 +61,14 @@ export default function WelcomeScreen(props: {
   });
 
   return (
-    <View>
-      <ImageBackground
-        style={welcomeStyles.fullscreen}
-        source={require('../../utils/assets/bg.png')}
-        resizeMode="cover">
-        <View
-        // style={{marginTop: welcomeScreen ? 70 : null}}
-        >
+    <View style={{
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#00003f'
+    }}>
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <View>
           <Animated.View style={value.getLayout()}>
             <Image
               style={{
@@ -84,7 +84,7 @@ export default function WelcomeScreen(props: {
           {!welcomeScreen && <Text style={welcomeStyles.title}>PokeDex</Text>}
         </View>
         {welcomeScreen && animateBall() && fadeInAnimation() && (
-          <Animated.View style={{ bottom: 25, opacity }}>
+          <Animated.View style={{ bottom: -50, opacity }}>
             <Text style={welcomeStyles.title}> Welcome to</Text>
             <Text style={welcomeStyles.title}> PokeDex</Text>
             <Text
@@ -104,18 +104,10 @@ export default function WelcomeScreen(props: {
               title="Explore Now "
               action={() => props.navigation.navigate('ListingScreen')}
             />
-            <Text
-              style={{
-                color: '#fff',
-                textAlign: 'center',
-                marginTop: 15,
-                textDecorationLine: 'underline',
-              }}>
-              About Me
-            </Text>
+
           </Animated.View>
         )}
-      </ImageBackground>
+      </View>
     </View>
   );
 }
